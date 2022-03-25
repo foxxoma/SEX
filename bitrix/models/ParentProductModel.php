@@ -4,14 +4,14 @@ namespace Module;
 use Module\Format;
 use Module\DefaultFormats;
 use Module\BaseModel;
-use Module\ParentProductModel;
+use Module\ProductModel;
 
-class ProductModel extends BaseModel
+class ParentProductModel extends BaseModel
 {
 	protected $format = [];
-	protected $filter = ['IBLOCK_ID' => PRODUCT_OFFER_IBLOCK_ID];
+	protected $filter = ['IBLOCK_ID' => PRODUCT_IBLOCK_ID];
 
-	protected $IBLOCK_ID = PRODUCT_OFFER_IBLOCK_ID;
+	protected $IBLOCK_ID = PRODUCT_IBLOCK_ID;
 
 	public function __construct($arguments = [])
 	{
@@ -40,8 +40,8 @@ class ProductModel extends BaseModel
 		return $result;
 	}
 
-	public function parentAction()
+	public function childrenAction()
 	{
-		return $this->belong(new ParentProductModel(), 'CML2_LINK');
+		return $this->has(new ProductModel(), 'CML2_LINK');
 	}
 }

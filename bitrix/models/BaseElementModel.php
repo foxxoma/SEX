@@ -8,10 +8,14 @@ class BaseElementModel
 {
 	protected $element = [];
 	protected $elementFields = [];
+	protected $elementId = null;
+	protected $elementList= [];
 	protected $format = [];
 
 	protected $sort = [];
 	protected $filter = [];
+	protected $select = false;
+
 	protected $pagination = false;
 
 	protected $IBLOCK_ID = false;
@@ -65,6 +69,13 @@ class BaseElementModel
 		return $this;
 	}
 
+	public function selectAction($props)
+	{
+		$this->select = $props;
+
+		return $this;
+	}
+
 	public function takeAction($count)
 	{
 		$pagination = ['checkOutOfRange' => true, 'iNumPage'=> 1, 'nPageSize' => $count];
@@ -86,23 +97,31 @@ class BaseElementModel
 		if ($id)
 			$this->where('ID', '=', $id);
 
-		$this->setElement();
+		$this->select(['ID']);
 
-		if (empty($this->element))
+		$this->setElementList();
+
+		if (empty($this->elementList))
 			return false;
 
-		$this->elementFields['ID'] = $id;
+		$this->elementId = $this->elementList->Fetch()['ID'];
+
+		$this->select(false);
+		$this->setElementList();
 
 		return $this;
 	}
 
 	public function getAction()
 	{
-		$this->setElement();
+		$this->setElementList();
+
+		if (empty($this->elementList))
+			return false;
 
 		$result = [];
 
-		while($item = $this->element->GetNextElement())
+		while($item = $this->elementList->GetNextElement())
 		{
 			$element = $item->GetFields();
 			$element['PROPERTIES'] = $item->getProperties();
@@ -115,7 +134,7 @@ class BaseElementModel
 
 	public function toArray()
 	{
-		$rElement = $this->element->GetNextElement();
+		$rElement = $this->elementList->GetNextElement();
 		$element = $rElement->GetFields();
 		$element['PROPERTIES'] = $rElement->getProperties();
 
@@ -130,7 +149,7 @@ class BaseElementModel
 
 	public function saveAction()
 	{
-		if (!empty($this->elementFields['ID']))
+		if (!empty($this->elementId))
 			return $this->update();
 
 		$this->elementFields['FIELDS']['IBLOCK_ID'] = $this->IBLOCK_ID;
@@ -138,8 +157,10 @@ class BaseElementModel
 		if($id = $this->element->Add($this->elementFields['FIELDS']));
 		{
 			$this->where('ID', '=', $id);
-			$this->elementFields['ID'] = $id;
+			$this->elementId = $id;
+
 			$this->savePropertiesAction();
+			$this->setElementList();
 
 			return true;
 		}	
@@ -149,11 +170,9 @@ class BaseElementModel
 
 	public function update()
 	{
-		$this->element = new \CIBlockElement;
-
-		$this->element->Update($this->elementFields['ID'], $this->elementFields['FIELDS']);
-
+		$this->element->Update($this->elementId, $this->elementFields['FIELDS']);
 		$this->savePropertiesAction();
+		$this->setElementList();
 
 		return true;
 	}
@@ -161,13 +180,13 @@ class BaseElementModel
 	public function deleteAction($id = null)
 	{
 		if ($id != null)
-			$this->elementFields['ID'] = $id;
+			$this->elementId = $id;
 
-		if (empty($this->elementFields['ID']))
+		if (empty($this->elementId))
 			return false;
 
 		$this->element = new \CIBlockElement;
-		$this->element->delete($this->elementFields['ID']);
+		$this->element->delete($this->elementId);
 
 		return true;
 	}
@@ -178,19 +197,41 @@ class BaseElementModel
 			return;
 
 		\CIBlockElement::SetPropertyValuesEx(
-			$this->elementFields['ID'],
+			$this->elementId,
 			$this->IBLOCK_ID,
 			$this->elementFields['PROPERTIES_VALUES']
 		);
 	}
 
-	public function setElement()
+	public function belong($model, $property)
 	{
-		$this->element = \CIBlockElement::GetList(
+		if (!$this->elementId)
+			return false;
+
+		$properties = $this->elementList->GetNextElement()->getProperties();
+		if (!empty($properties[$property]['VALUE']))
+			return $model->where('ID', '=', $properties[$property]['VALUE']);
+
+		return false;
+	}
+
+	public function has($model, $property)
+	{
+		if (!$this->elementId)
+			return false;
+
+		$model->where('PROPERTY_' . $property , '=', $this->elementId);
+		return $model->where('PROPERTY_' . $property . '_VALUE' , '=', [$this->elementId]);
+	}
+
+	public function setElementList()
+	{
+		$this->elementList = \CIBlockElement::GetList(
 			$this->sort,
 			$this->filter,
 			false,
-			$this->pagination
+			$this->pagination,
+			$this->select
 		);
 	}
 }
