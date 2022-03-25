@@ -1,12 +1,13 @@
 <?php
-namespace Module;
+namespace SF\Model;
 
-use Module\Format;
-use Module\DefaultFormats;
-use Module\BaseModel;
-use Module\ParentProductModel;
+use SF\Model\Helper\Format;
+use SF\Model\Helper\DefaultFormats;
 
-class ProductModel extends BaseModel
+use SF\Model\Model\BaseElementModel;
+use SF\Model\Model\ParentProductModel;
+
+class ProductModel extends BaseElementModel
 {
 	protected $format = [];
 	protected $filter = ['IBLOCK_ID' => PRODUCT_OFFER_IBLOCK_ID];

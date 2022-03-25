@@ -1,8 +1,8 @@
 <?php
-namespace Module;
+namespace SF\Model;
 
-use Module\Format;
-use Module\DefaultFormats;
+use SF\Helper\Format;
+use SF\Helper\DefaultFormats;
 
 class BaseElementModel
 {

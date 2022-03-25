@@ -1,118 +1,10 @@
 <?php
 
-namespace Module;
+namespace SF\Helper;
 //класс для форматирования
 class Format
 {
 	public static function item($format, $response)
-	{
-		$result = [];
-
-		foreach($format as $f_key => $prop)
-		{
-			if (is_array($prop))
-			{
-				if (empty($prop['list']))
-				{
-					if(is_array($prop['props']))
-					{
-						foreach($prop['props'] as $props_prop_key => $prop_name)
-							$result[$f_key][$props_prop_key] =  $response[$prop['alias']][$prop_name];
-					}
-					else
-					{
-						$result[$f_key] = $response[$prop['alias']][$prop['props']];
-					}
-				}
-				else
-				{
-					if(is_array($prop['props']))
-					{	
-						foreach($prop['props'] as $props_prop_key => $prop_name)
-						{
-							$i = 0;
-							foreach($response[$prop['alias']] as $r_prop)
-							{
-								if($prop['key'])
-								{
-									$arrayKey = $r_prop[$prop['key']];
-
-									if (is_array($prop['list']))
-										if (!in_array($arrayKey, $prop['list']))
-											continue;
-
-									if(ctype_upper(str_replace(['-','_'], ' ', $arrayKey)) || stristr($arrayKey, '_') || stristr($arrayKey, '-'))
-									{
-										$arrayKey = strtolower($arrayKey);
-										$arrayKey = ucwords(str_replace(['-','_'], ' ', $arrayKey));
-										$arrayKey = lcfirst(str_replace(' ', '', $arrayKey));
-									}
-
-									if (array_key_exists('PROPERTY_TYPE', $r_prop))
-										if ($r_prop['PROPERTY_TYPE'] == 'F')
-											$r_prop['VALUE'] = self::getImagePath($r_prop['VALUE']);
-
-									$result[$f_key][$arrayKey][$props_prop_key] = $r_prop[$prop_name];
-								}
-								else
-								{
-									if (array_key_exists('PROPERTY_TYPE', $r_prop))
-										if ($r_prop['PROPERTY_TYPE'] == 'F')
-											$r_prop['VALUE'] = self::getImagePath($r_prop['VALUE']);
-
-									$result[$f_key][$i][$props_prop_key] = $r_prop[$prop_name];
-								}
-
-								$i++;
-							}
-						}
-					}
-					else
-					{
-						foreach($response[$prop['alias']] as $r_prop)
-						{
-							if($prop['key'])
-							{
-								$arrayKey = $r_prop[$prop['key']];
-
-								if (is_array($prop['list']))
-									if (!in_array($arrayKey, $prop['list']))
-										continue;
-
-								if(ctype_upper(str_replace(['-','_'], ' ', $arrayKey)) || stristr($arrayKey, '_') || stristr($arrayKey, '-'))
-								{
-									$arrayKey = strtolower($arrayKey);
-									$arrayKey = ucwords(str_replace(['-','_'], ' ', $arrayKey));
-									$arrayKey = lcfirst(str_replace(' ', '', $arrayKey));
-								}
-
-								if (array_key_exists('PROPERTY_TYPE', $r_prop))
-										if ($r_prop['PROPERTY_TYPE'] == 'F')
-											$r_prop['VALUE'] = self::getImagePath($r_prop['VALUE']);
-
-								$result[$f_key][$arrayKey] = $r_prop[$prop['props']];
-							}
-							else
-							{
-								if (array_key_exists('PROPERTY_TYPE', $r_prop))
-										if ($r_prop['PROPERTY_TYPE'] == 'F')
-											$r_prop['VALUE'] = self::getImagePath($r_prop['VALUE']);
-
-								$result[$f_key][] = $r_prop[$prop['props']];
-							}
-						};
-					}
-				}
-			}
-			else
-			{
-				$result[$f_key] = $response[$prop];
-			}
-		}
-		return $result;
-	}
-
-	public static function item2($format, $response)
 	{
 		$result = [];
 
@@ -127,7 +19,7 @@ class Format
 		if (is_array($prop))
 			return self::arrayLevel($prop, $response);
 
-		if (!isset($response[$prop]))
+		if (!isset($response[$prop]) && !is_array($response))
 			return $response;
 
 		return $response[$prop];
@@ -160,6 +52,8 @@ class Format
 
 		foreach($response[$prop['alias']] as $r_prop)
 		{
+			$r_prop = self::checkPropFile($r_prop);
+
 			if($prop['key'])
 			{
 				$arrayKey = $r_prop[$prop['key']];
@@ -193,6 +87,8 @@ class Format
 			$i = 0;
 			foreach($response[$prop['alias']] as $r_prop)
 			{
+				$r_prop = self::checkPropFile($r_prop);
+
 				if($prop['key'])
 				{
 					$arrayKey = $r_prop[$prop['key']];
@@ -227,6 +123,16 @@ class Format
 		}
 
 		return $result;
+	}
+
+
+	public static function checkPropFile($r_prop)
+	{
+		if (array_key_exists('PROPERTY_TYPE', $r_prop))
+			if ($r_prop['PROPERTY_TYPE'] == 'F')
+			$r_prop['VALUE'] = self::getImagePath($r_prop['VALUE']);
+
+		return $r_prop;
 	}
 
 	/**
