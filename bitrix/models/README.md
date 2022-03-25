@@ -14,7 +14,7 @@
 	$products = ProductModel::first(336)
 		->setFields([
 			'FIELDS' => ['NAME' => 'name5'],
-			'PROPERTIES_VALUES' => ['WIDTH' => '46']
+			'PROPERTY_VALUES' => ['WIDTH' => '46']
 		])->save();
 
 //RILATIONS_________________________________________________________________________________
@@ -26,14 +26,14 @@
 	
 	$products = new ProductModel([
 			'FIELDS' => ['NAME' => 'test_model_3'],
-			'PROPERTIES_VALUES' => ['WIDTH' => '48']
+			'PROPERTY_VALUES' => ['WIDTH' => '48']
 		]);
 	return $products->save();
 
 	$products = new ProductModel();
 	$products->setFields([
 			'FIELDS' => ['NAME' => 'test_model_7'],
-			'PROPERTIES_VALUES' => ['WIDTH' => '47']
+			'PROPERTY_VALUES' => ['WIDTH' => '47']
 		]);
 	$products->save();
 	return $products->first()->toArray();

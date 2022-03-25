@@ -193,13 +193,13 @@ class BaseElementModel
 
 	public function savePropertiesAction()
 	{
-		if (empty($this->elementFields['PROPERTIES_VALUES']))
+		if (empty($this->elementFields['PROPERTY_VALUES']))
 			return;
 
 		\CIBlockElement::SetPropertyValuesEx(
 			$this->elementId,
 			$this->IBLOCK_ID,
-			$this->elementFields['PROPERTIES_VALUES']
+			$this->elementFields['PROPERTY_VALUES']
 		);
 	}
 
