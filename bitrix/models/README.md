@@ -1,12 +1,12 @@
 # SEX
-```php
-//GET
+
+//GET ______________________________________________________________________________________
+
 	return ProductModel::filter(['ID' => 336])->get();
 	return ProductModel::get();
 	return ProductModel::orderBy('NAME', 'desc')->get();
 	return ProductModel::where('ID', '!=', 336)->orderBy('NAME', 'desc')->take(2)->get();
 	return ProductModel::orderBy('NAME', 'desc')->pagenate(1, 2)->get();
-
 
 
 // UPDATE __________________________________________________________________________________
@@ -16,6 +16,11 @@
 			'FIELDS' => ['NAME' => 'name5'],
 			'PROPERTIES_VALUES' => ['WIDTH' => '46']
 		])->save();
+
+//RILATIONS_________________________________________________________________________________
+
+	return ProductModel::first(338)->parent()->get();
+	return ParentProductModel::first(339)->children()->get();
 
 //ADD_______________________________________________________________________________________
 	
@@ -36,8 +41,7 @@
 //DELETE____________________________________________________________________________________
 
 	return $products = ProductModel::first(336)->delete();
-	return $products = ProductModel::first(476)->delete(477);
-	return $products = ProductModel::delete(478
+	return $products = ProductModel::delete(478)
 
 
 
