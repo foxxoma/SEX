@@ -9,7 +9,6 @@ use SF\Model\Model\ProductModel;
 
 class ParentProductModel extends BaseElementModel
 {
-	protected $format = [];
 	protected $filter = ['IBLOCK_ID' => PRODUCT_IBLOCK_ID];
 
 	protected $IBLOCK_ID = PRODUCT_IBLOCK_ID;

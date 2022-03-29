@@ -14,7 +14,7 @@ class BaseElementModel
 
 	protected $sort = [];
 	protected $filter = [];
-	protected $select = false;
+	protected $select = [];
 
 	protected $pagination = false;
 
@@ -42,7 +42,7 @@ class BaseElementModel
 			return $this->$name(...$arguments);
 	}
 
-	public function newElement($arguments)
+	public function newElement(array $arguments)
 	{
 		$this->elementFields = $arguments;
 		$this->element = new \CIBlockElement();
@@ -55,7 +55,7 @@ class BaseElementModel
 		return $this;
 	}
 
-	public function filterAction($filter)
+	public function filterAction(array $filter)
 	{
 		$this->filter = array_merge($filter, $this->filter);
 
@@ -69,9 +69,16 @@ class BaseElementModel
 		return $this;
 	}
 
-	public function selectAction($props)
+	public function selectAction(array $props)
 	{
 		$this->select = $props;
+
+		return $this;
+	}
+
+	public function formatAction(array $format)
+	{
+		$this->format = $format;
 
 		return $this;
 	}
@@ -106,7 +113,7 @@ class BaseElementModel
 
 		$this->elementId = $this->elementList->Fetch()['ID'];
 
-		$this->select(false);
+		$this->select([]);
 		$this->setElementList();
 
 		return $this;
@@ -125,7 +132,6 @@ class BaseElementModel
 		{
 			$element = $item->GetFields();
 			$element['PROPERTIES'] = $item->getProperties();
-
 			$result[] = Format::item($this->format, $element);
 		}
 
@@ -135,13 +141,20 @@ class BaseElementModel
 	public function toArray()
 	{
 		$rElement = $this->elementList->GetNextElement();
+
+		if (is_bool($rElement))
+		{
+			$this->setElementList();
+			return $this->toArray();
+		}
+
 		$element = $rElement->GetFields();
 		$element['PROPERTIES'] = $rElement->getProperties();
 
 		return Format::item($this->format, $element);
 	}
 
-	public function setFields($arguments)
+	public function setFields(array $arguments)
 	{
 		$this->elementFields = array_merge($arguments, $this->elementFields);
 		return $this;
@@ -163,7 +176,7 @@ class BaseElementModel
 			$this->setElementList();
 
 			return true;
-		}	
+		}
 
 		return false;
 	}
@@ -203,25 +216,35 @@ class BaseElementModel
 		);
 	}
 
-	public function belong($model, $property)
+	public function belong(BaseElementModel $model, string $foreignKey, string $internalKey = 'ID')
 	{
 		if (!$this->elementId)
 			return false;
 
 		$properties = $this->elementList->GetNextElement()->getProperties();
-		if (!empty($properties[$property]['VALUE']))
-			return $model->where('ID', '=', $properties[$property]['VALUE']);
+		if (!empty($properties[$foreignKey]['VALUE']))
+			return $model->where($internalKey, '=', $properties[$foreignKey]['VALUE']);
 
 		return false;
 	}
 
-	public function has($model, $property)
+	public function has(BaseElementModel $model, string $foreignKey, string $internalKey = 'ID')
 	{
 		if (!$this->elementId)
 			return false;
 
-		$model->where('PROPERTY_' . $property , '=', $this->elementId);
-		return $model->where('PROPERTY_' . $property . '_VALUE' , '=', [$this->elementId]);
+		$value = $this->elementId;
+
+		if ($internalKey != 'ID')
+		{
+			$properties = $this->elementList->GetNextElement()->getProperties();
+			if (empty($properties[$internalKey]['VALUE']))
+				return false;
+
+			$value = $properties[$internalKey]['VALUE'];
+		}
+
+		return $model->where('PROPERTY_' . $foreignKey , '=', $value);
 	}
 
 	public function setElementList()
