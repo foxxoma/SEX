@@ -58,6 +58,8 @@
 	return MenuModel::where('ID', '!=', 18)->orderBy('NAME', 'desc')->take(2)->get();
 	return MenuModel::orderBy('NAME', 'desc')->pagenate(2, 1)->get();
 
+	return MenuModel::pagenate(1, 10)->tree();
+
 //RILATIONS
 	return MenuModel::first(20)->parent()->get();
 	return MenuModel::first(20)->children()->get();

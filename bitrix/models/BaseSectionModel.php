@@ -152,6 +152,32 @@ class BaseSectionModel
 		return Format::item($this->format, $section);
 	}
 
+	public function treeAction()
+	{
+		$list = $this->get();
+		return $this->buildTree($list);
+	}
+
+	public function buildTree(array $elements, $parentId = 0, $parent_key = 'parent', $idKey = 'id')
+	{
+		$branch = [];
+		
+		foreach ($elements as $element)
+		{
+			if ($element[$parent_key] == $parentId)
+			{
+				$child = $this->buildTree($elements, $element[$idKey], $parent_key, $idKey);
+
+				if ($child)
+					$element['children'] = $child;
+
+				$branch[] = $element;
+			}
+		}
+		
+		return $branch;
+	}
+
 	public function setFields(array $arguments)
 	{
 		$this->sectionFields = array_merge($arguments, $this->sectionFields);
