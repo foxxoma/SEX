@@ -2,6 +2,6 @@
 
 ***bitrix***
 -----------------------------------
-  ###[**help**](https://github.com/foxxoma/SEX/tree/main/bitrix/help) -> format result
+  [**help**](https://github.com/foxxoma/SEX/tree/main/bitrix/help) -> format result
   
-  ###[**models**](https://github.com/foxxoma/SEX/tree/main/bitrix/models) -> custom bitrix model 
+  [**models**](https://github.com/foxxoma/SEX/tree/main/bitrix/models) -> custom bitrix model 
