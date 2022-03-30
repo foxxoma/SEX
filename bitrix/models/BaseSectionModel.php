@@ -144,7 +144,10 @@ class BaseSectionModel
 		if (is_bool($rSection))
 		{
 			$this->setSectionList();
-			return $this->toArray();
+			$rSection = $this->sectionList->GetNextElement();
+
+			if (empty($rSection))
+				return [];
 		}
 
 		$section = $rSection->GetFields();

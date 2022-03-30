@@ -144,8 +144,11 @@ class BaseElementModel
 
 		if (is_bool($rElement))
 		{
-			$this->setElementList();
-			return $this->toArray();
+			$this->setSectionList();
+			$rElement = $this->elementList->GetNextElement();
+
+			if (empty($rElement))
+				return [];
 		}
 
 		$element = $rElement->GetFields();
