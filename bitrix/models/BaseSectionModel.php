@@ -64,7 +64,10 @@ class BaseSectionModel
 
 	public function orderByAction($property, $sort = "asc")
 	{
-		$this->sort[$property] = $sort;
+		if (!is_array($property))
+			$this->sort[$property] = $sort;
+		else
+			$this->sort = $property;
 
 		return $this;
 	}
