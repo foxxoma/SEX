@@ -15,6 +15,9 @@ class BaseElementModel
 	protected $sort = [];
 	protected $filter = [];
 	protected $select = [];
+	protected $groupBy = false;
+
+	protected $elementsCount = 0;
 
 	protected $pagination = false;
 
@@ -46,6 +49,11 @@ class BaseElementModel
 	{
 		$this->elementFields = $arguments;
 		$this->element = new \CIBlockElement();
+	}
+
+	public function countAction()
+	{
+		return $this->elementsCount;
 	}
 
 	public function whereAction($property, $operator, $value)
@@ -94,6 +102,13 @@ class BaseElementModel
 		return $this;
 	}
 
+	public function pagenateCustomAction(array $arr)
+	{
+		$this->pagination = $arr;
+
+		return $this;
+	}
+
 	public function pagenateAction($page, $count)
 	{
 		$pagination = ['checkOutOfRange' => true, 'iNumPage'=> $page, 'nPageSize' => $count];
@@ -122,6 +137,23 @@ class BaseElementModel
 		return $this;
 	}
 
+	public function fetchAction()
+	{
+		$this->setElementList();
+
+		if (empty($this->elementList))
+			return false;
+
+		$result = [];
+
+		while($item = $this->elementList->Fetch())
+		{
+			$result[] = $item;
+		}
+
+		return $result;
+	}
+
 	public function getAction()
 	{
 		$this->setElementList();
@@ -130,6 +162,8 @@ class BaseElementModel
 			return false;
 
 		$result = [];
+
+		$this->elementsCount = $this->elementList->NavRecordCount;
 
 		while($item = $this->elementList->GetNextElement())
 		{
@@ -184,7 +218,7 @@ class BaseElementModel
 			return true;
 		}
 
-		return false;
+		return $this->element->LAST_ERROR;
 	}
 
 	public function update()
@@ -208,6 +242,13 @@ class BaseElementModel
 		$this->element->delete($this->elementId);
 
 		return true;
+	}
+
+	public function groupBy($data)
+	{
+		$this->groupBy = $data;
+
+		return $this;
 	}
 
 	public function savePropertiesAction()
@@ -258,7 +299,7 @@ class BaseElementModel
 		$this->elementList = \CIBlockElement::GetList(
 			$this->sort,
 			$this->filter,
-			false,
+			$this->groupBy,
 			$this->pagination,
 			$this->select
 		);
