@@ -181,7 +181,7 @@ class BaseElementModel
 
 		if (is_bool($rElement))
 		{
-			$this->setSectionList();
+			$this->setElementList();
 			$rElement = $this->elementList->GetNextElement();
 
 			if (empty($rElement))
