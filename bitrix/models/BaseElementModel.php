@@ -58,6 +58,20 @@ class BaseElementModel
 
 	public function whereAction($property, $operator, $value)
 	{
+		if (!is_array($value))
+			$value = [$value];
+
+		if (!empty($this->filter[$operator.$property]))
+		{
+			$value = array_intersect($this->filter[$operator.$property], $value);
+		}
+		elseif(!empty($this->filter['='.$property]) && $operator == '')
+		{
+			$operator = '=';
+			$value = array_intersect($this->filter[$operator.$property], $value);
+			unset($this->filter[$operator.$property]);
+		}
+
 		$this->filter[$operator.$property] = $value;
 
 		return $this;
@@ -65,7 +79,8 @@ class BaseElementModel
 
 	public function filterAction(array $filter)
 	{
-		$this->filter = array_merge($filter, $this->filter);
+		foreach($filter as $prop => $value)
+			$this->where($prop, '', $value);
 
 		return $this;
 	}
@@ -130,6 +145,9 @@ class BaseElementModel
 			return false;
 
 		$this->elementId = $this->elementList->Fetch()['ID'];
+
+		if (empty($this->elementId))
+			return false;
 
 		$this->select([]);
 		$this->setElementList();
