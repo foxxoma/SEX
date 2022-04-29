@@ -64,6 +64,9 @@ class BaseSectionModel
 			unset($this->filter[$operator.$property]);
 		}
 
+		if (empty($value))
+			$value = 'undefined';
+
 		$this->filter[$operator.$property] = $value;
 
 		return $this;
