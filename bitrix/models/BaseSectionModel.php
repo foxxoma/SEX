@@ -50,6 +50,15 @@ class BaseSectionModel
 
 	public function whereAction($property, $operator, $value)
 	{
+		$value = $this->valueIntersection($property, $operator, $value);
+
+		$this->filter[$operator.$property] = $value;
+
+		return $this;
+	}
+
+	public function valueIntersection($property, $operator, $value)
+	{
 		if (!is_array($value))
 			$value = [$value];
 
@@ -67,9 +76,7 @@ class BaseSectionModel
 		if (empty($value))
 			$value = 'undefined';
 
-		$this->filter[$operator.$property] = $value;
-
-		return $this;
+		return $value;
 	}
 
 	public function filterAction(array $filter)
