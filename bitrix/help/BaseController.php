@@ -1,5 +1,6 @@
 <?php
-namespace Odva\Module;
+
+namespace SF\Module;
 
 use \Bitrix\Main\Engine\Controller;
 
