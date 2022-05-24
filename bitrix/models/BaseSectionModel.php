@@ -119,7 +119,7 @@ class BaseSectionModel
 		return $this;
 	}
 
-	public function pagenateAction($page, $count)
+	public function paginateAction($page, $count)
 	{
 		$pagination = ['checkOutOfRange' => true, 'iNumPage'=> $page, 'nPageSize' => $count];
 		$this->pagination = $pagination;
