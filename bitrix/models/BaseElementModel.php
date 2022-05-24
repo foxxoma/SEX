@@ -127,14 +127,14 @@ class BaseElementModel
 		return $this;
 	}
 
-	public function pagenateCustomAction(array $arr)
+	public function paginateCustomAction(array $arr)
 	{
 		$this->pagination = $arr;
 
 		return $this;
 	}
 
-	public function pagenateAction($page, $count)
+	public function paginateAction($page, $count)
 	{
 		$pagination = ['checkOutOfRange' => true, 'iNumPage'=> $page, 'nPageSize' => $count];
 		$this->pagination = $pagination;

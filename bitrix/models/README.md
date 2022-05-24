@@ -7,8 +7,8 @@
 	return ProductModel::get();
 	return ProductModel::orderBy('NAME', 'desc')->get();
 	return ProductModel::where('ID', '!=', 336)->orderBy('NAME', 'desc')->take(2)->get();
-	return ProductModel::orderBy('NAME', 'desc')->pagenate(1, 2)->get();
-	return ProductModel::orderBy('NAME', 'desc')->select(['*', 'UF_*'])->pagenate(1, 2)->get();
+	return ProductModel::orderBy('NAME', 'desc')->paginate(1, 2)->get();
+	return ProductModel::orderBy('NAME', 'desc')->select(['*', 'UF_*'])->paginate(1, 2)->get();
 	return ProductModel::where('ACTIVE', '=', 'Y')->select(['ID'])->first()->toArray();
 
 //RILATIONS
@@ -56,9 +56,9 @@
 	return MenuModel::filter(['=ID' => 20])->get();
 	return MenuModel::orderBy('NAME', 'asc')->get();
 	return MenuModel::where('ID', '!=', 18)->orderBy('NAME', 'desc')->take(2)->get();
-	return MenuModel::orderBy('NAME', 'desc')->pagenate(2, 1)->get();
+	return MenuModel::orderBy('NAME', 'desc')->paginate(2, 1)->get();
 
-	return MenuModel::pagenate(1, 10)->tree();
+	return MenuModel::paginate(1, 10)->tree();
 
 //RILATIONS
 	return MenuModel::first(20)->parent()->get();
